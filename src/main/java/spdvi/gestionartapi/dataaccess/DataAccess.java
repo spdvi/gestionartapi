@@ -129,6 +129,28 @@ public String findUserPassword(String email) {
         return user;
     }
 
+    public byte[] getUserProfilePicture(int userId) {
+        byte[] profilePicture = null;
+        String sql = "SELECT profilePicture FROM dbo.usuaris WHERE id = ?";
+        try (Connection connection = getConnection();
+                PreparedStatement selectStatement = connection.prepareStatement(sql);) {
+            selectStatement.setInt(1, userId);
+            ResultSet resultSet = selectStatement.executeQuery();
+            while (resultSet.next()) {
+                InputStream profilePictureIS = resultSet.getBinaryStream("profilePicture");
+                if (profilePictureIS != null) {
+                    profilePicture = ImageUtils.readAllBytes(profilePictureIS);
+                } else {
+                    profilePicture = null;
+                }
+            }
+
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+        return profilePicture;
+    }
+
     public int insertUser(Usuari user) {
         int result = 0;
         String sql = "INSERT INTO dbo.usuaris (nom, llinatges, email, password, password_hash) VALUES (?,?,?,?,?)";
@@ -423,12 +445,12 @@ public String findUserPassword(String email) {
         return result == 1 ? true : false;
     }    
 
-    public boolean updateUserProfilePicture(int userId, ImageIcon icon) {
+    public boolean updateUserProfilePicture(int userId, byte[] binaryImage) {
         int result = 0;
         String sql = "UPDATE dbo.usuaris SET profilePicture = ? WHERE id = ?";
         try (Connection connection = getConnection();
                 PreparedStatement updateStatement = connection.prepareStatement(sql);) {
-            byte[] binaryImage = ImageUtils.toByteArray(icon.getImage());
+//            byte[] binaryImage = ImageUtils.toByteArray(icon.getImage());
             updateStatement.setBytes(1, binaryImage);
             updateStatement.setInt(2, userId);
             result = updateStatement.executeUpdate();

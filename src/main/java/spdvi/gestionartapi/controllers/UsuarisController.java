@@ -3,11 +3,14 @@ package spdvi.gestionartapi.controllers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import spdvi.gestionartapi.dataaccess.DataAccess;
 import spdvi.gestionartapi.models.Espai;
 import spdvi.gestionartapi.models.Usuari;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -69,4 +72,25 @@ public class UsuarisController {
         dataAccess.deleteSession(UUID.fromString(uuid));
     }
 
+    @GetMapping("/usuari/profilePicture/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public byte[] getProfilePicture(@PathVariable("userId") int userId) {
+        DataAccess dataAccess = new DataAccess(url, user, password);
+        return dataAccess.getUserProfilePicture(userId);
+    }
+
+    @PostMapping(path="/usuari/profilePicture/{userId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity updateProfilePicture(@RequestParam("profileImage") MultipartFile profileImage,
+                                           @PathVariable("userId") int userId) {
+        DataAccess dataAccess = new DataAccess(url, user, password);
+        try {
+            dataAccess.updateUserProfilePicture(userId, profileImage.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }
