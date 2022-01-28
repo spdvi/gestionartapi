@@ -75,7 +75,13 @@ public String findUserPassword(String email) {
     }
     return passwordInDb;
 }
-
+    public DAOUser getDAOUser(String email) {
+        Usuari user = getUser(email);
+        DAOUser daoUser = new DAOUser();
+        daoUser.setUsername(user.getEmail());
+        daoUser.setPassword(user.getPassword());
+        return daoUser;
+    }
 
     public int getUserId(String email) {
         int userId = 0;

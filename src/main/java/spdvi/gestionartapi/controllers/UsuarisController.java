@@ -55,14 +55,15 @@ public class UsuarisController {
 
     @PostMapping("/usuari")
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuari createUsuari(@RequestBody Usuari usuari) {
+    public @ResponseBody ResponseEntity<Usuari> createUsuari(@RequestBody Usuari usuari) {
         DataAccess dataAccess = new DataAccess(url, user, password);
         Usuari newUsuari = null;
         int success = dataAccess.insertUser(usuari);
         if (success == 1) {
             newUsuari = dataAccess.getUser(usuari.getEmail());
+            return new ResponseEntity<>(newUsuari, HttpStatus.CREATED);
         }
-        return newUsuari;
+        return new ResponseEntity<>(newUsuari, HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("/usuari/session/{uuid}")

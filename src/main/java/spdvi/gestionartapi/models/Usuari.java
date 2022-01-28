@@ -1,5 +1,6 @@
 package spdvi.gestionartapi.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import spdvi.gestionartapi.Constants;
 
 public class Usuari {
@@ -71,8 +72,8 @@ public class Usuari {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    String password;
+//    @JsonIgnore
+    private String password;
 
 //    public byte[] getPasswordHash() {
 //        return passwordHash;
